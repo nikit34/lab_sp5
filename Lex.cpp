@@ -6,56 +6,55 @@
 #include "baselexer.cpp"
 using namespace std;
 
-int main(){
+
+int main() {
   tLexer lex;
-//*****************************************
- while(true){
-   char linebuf[1000];
-   cout << "\nSource>";
-   *linebuf = 0;
-   cin.getline(linebuf,1000);
-   if(*linebuf == 0) break; //завершение работы
-   string source_name = string(linebuf) + ".ss";
-   bool file=false;
-   {
-    ifstream tmp(source_name.c_str());
-// строка ввода похожа на имя файла
-    if(tmp) file = true;
-   }
-   if(!file){
-     source_name = "temp.ss";
-     ofstream tmp(source_name.c_str());
-     tmp << linebuf << endl;
-     }
-   cout << "\nSource file name:"
-        << source_name << endl;
-//  распечатать исходный текст с номерами строк
-   {// начало блока
-    ifstream tmp(source_name.c_str());
-    int linecount=0;
-    while(tmp){
-     *linebuf=0;
-     tmp.getline(linebuf,1000);
-     cout<< setw(4)<< ++linecount<<"|"<< linebuf<<endl;
-     }//while(tmp)...
-     cout<<"_________________\n";
-   }// конец блока
-   if(!lex.Begin(source_name.c_str())){
-    cout << "Can't open file "<< source_name <<endl;
-    continue;
-    }
-   cout<<" Lexer scan:"<<endl;
-//+++++++++++++++++++++++++++++++
-   while(true){
-     string token = lex.GetToken();
-     string lexeme = lex.GetLexeme();
-     cout <<setw(2)<<lex.GetLineCount()<<
-      "/" <<setw(2)<<lex.GetStartPos()<<":"<<
-      setw(5) << token <<"  "<< lexeme << endl;
-     if(token == "#") break;
-     }
-//+++++++++++++++++++++++++++++++
-  lex.End();
- }
-//*****************************************
+
+  while (true) {
+      char linebuf[1000];
+      cout << "\nSource>";
+      *linebuf = 0;
+      cin.getline(linebuf, 1000);
+      if (*linebuf == 0) break; // Р·Р°РІРµСЂС€РµРЅРёРµ СЂР°Р±РѕС‚С‹
+      string source_name = string(linebuf) + ".ss";
+      bool file = false;
+      {
+          ifstream tmp(source_name.c_str());
+          // СЃС‚СЂРѕРєР° РІРІРѕРґР° РїРѕС…РѕР¶Р° РЅР° РёРјСЏ С„Р°Р№Р»Р°
+          if (tmp) file = true;
+      }
+      if (!file) {
+          source_name = "temp.ss";
+          ofstream tmp(source_name.c_str());
+          tmp << linebuf << endl;
+      }
+      cout << "\nSource file name:" << source_name << endl;
+
+      // СЂР°СЃРїРµС‡Р°С‚Р°С‚СЊ РёСЃС…РѕРґРЅС‹Р№ С‚РµРєСЃС‚ СЃ РЅРѕРјРµСЂР°РјРё СЃС‚СЂРѕРє
+      { // РЅР°С‡Р°Р»Рѕ Р±Р»РѕРєР°
+          ifstream tmp(source_name.c_str());
+          int linecount = 0;
+          while (tmp) {
+              *linebuf = 0;
+              tmp.getline(linebuf, 1000);
+              cout << setw(4) << ++linecount << "|" << linebuf << endl;
+          } // while(tmp)...
+          cout << "_________________\n";
+      } // РєРѕРЅРµС† Р±Р»РѕРєР°
+      if (!lex.Begin(source_name.c_str())) {
+          cout << "Can't open file " << source_name << endl;
+          continue;
+      }
+      cout << " Lexer scan:" << endl;
+
+      while (true) {
+          string token = lex.GetToken();
+          string lexeme = lex.GetLexeme();
+          cout << setw(2) << lex.GetLineCount() <<
+                "/" << setw(2) << lex.GetStartPos() << ":" <<
+                setw(5) << token << "  " << lexeme << endl;
+          if (token == "#") break;
+      }
+      lex.End();
+  }
 }

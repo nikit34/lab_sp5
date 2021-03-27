@@ -1,91 +1,89 @@
 #ifndef FSM_H
 #define FSM_H
+
 #include <vector>
 #include <map>
 #include <set>
 
-class tFSM{
+class tFSM {
 public:
-//  типы
-  typedef char tSymbol;
-  typedef unsigned char tState;
-  typedef std::set<tState> tStateSet;
-// конструктор
-  tFSM(){}; //создает "пустой" автомат
-// функции-члены
-//     добавляет одну команду (from,c)->to
-  void add(tState from, tSymbol c, tState to);
-  void final(tState st);//включает одно состояние
-//                      во множество заключительных
-  int  apply(const tSymbol* input);//применяет автомат
-//                                к входной цепочке
+    // С‚РёРїС‹
+    typedef char tSymbol;
+    typedef unsigned char tState;
+    typedef std::set<tState> tStateSet;
 
-  size_t size()const{return table.size();}//выдает
-//       размер (количество состояний) автомата
+    // РєРѕРЅСЃС‚СЂСѓРєС‚РѕСЂ
+    tFSM() {}; // СЃРѕР·РґР°РµС‚ "РїСѓСЃС‚РѕР№" Р°РІС‚РѕРјР°С‚
+
+    // С„СѓРЅРєС†РёРё-С‡Р»РµРЅС‹
+    // РґРѕР±Р°РІР»СЏРµС‚ РѕРґРЅСѓ РєРѕРјР°РЅРґСѓ (from,c)->to
+    void add(tState from, tSymbol c, tState to);
+
+    void final(tState st); // РІРєР»СЋС‡Р°РµС‚ РѕРґРЅРѕ СЃРѕСЃС‚РѕСЏРЅРёРµ РІРѕ РјРЅРѕР¶РµСЃС‚РІРѕ Р·Р°РєР»СЋС‡РёС‚РµР»СЊРЅС‹С…
+    int apply(const tSymbol *input); // РїСЂРёРјРµРЅСЏРµС‚ Р°РІС‚РѕРјР°С‚ Рє РІС…РѕРґРЅРѕР№ С†РµРїРѕС‡РєРµ
+
+    size_t size() const { return table.size(); } // РІС‹РґР°РµС‚ СЂР°Р·РјРµСЂ (РєРѕР»РёС‡РµСЃС‚РІРѕ СЃРѕСЃС‚РѕСЏРЅРёР№) Р°РІС‚РѕРјР°С‚Р°
 
 private:
-// представление детерминированного конечного
-//            автомата
-  typedef std::map<tSymbol,tState> tTransMap;
-  typedef std::vector<tTransMap> tStateTable;
+    // РїСЂРµРґСЃС‚Р°РІР»РµРЅРёРµ РґРµС‚РµСЂРјРёРЅРёСЂРѕРІР°РЅРЅРѕРіРѕ РєРѕРЅРµС‡РЅРѕРіРѕ Р°РІС‚РѕРјР°С‚Р°
+    typedef std::map<tSymbol, tState> tTransMap;
+    typedef std::vector<tTransMap> tStateTable;
 
-  tStateTable 	table;  //таблица состояний
-  tStateSet 	finals; //множество заключитеьных
-                        // состояний
+    tStateTable table; // С‚Р°Р±Р»РёС†Р° СЃРѕСЃС‚РѕСЏРЅРёР№
+    tStateSet finals; // РјРЅРѕР¶РµСЃС‚РІРѕ Р·Р°РєР»СЋС‡РёС‚РµР»СЊРЅС‹С… СЃРѕСЃС‚РѕСЏРЅРёР№
 };
-// функции-помощники
-  void addstr(tFSM& fsm,
-              tFSM::tState from, const tFSM::tSymbol *str,
-              tFSM::tState to);
-  void addrange(tFSM& fsm,
-                tFSM::tState from, tFSM::tSymbol first,
-                tFSM::tSymbol last, tFSM::tState to);
+
+// С„СѓРЅРєС†РёРё-РїРѕРјРѕС‰РЅРёРєРё
+void addstr(tFSM &fsm,
+            tFSM::tState from, const tFSM::tSymbol *str,
+            tFSM::tState to);
+
+void addrange(tFSM &fsm,
+              tFSM::tState from, tFSM::tSymbol first,
+              tFSM::tSymbol last, tFSM::tState to);
+
 //------------------------------------------------------
-//        РЕАЛИЗАЦИЯ
-inline void tFSM::add(tState from,tSymbol c,tState to){
-  size_t sz=1+(from > to ? from : to);//1+max(from,to)
-  if (sz > table.size())table.resize(sz);//увеличивает
-//                 размер вектора до sz
-  table[from][c] = to; //два перегруженных оператора []:
-                     //один для vector, другой для map.
+//        Р Р•РђР›РР—РђР¦РРЇ
+inline void tFSM::add(tState from, tSymbol c, tState to) {
+    size_t sz = 1 + (from > to ? from : to); // 1+max(from,to)
+    if (sz > table.size())table.resize(sz); // СѓРІРµР»РёС‡РёРІР°РµС‚ СЂР°Р·РјРµСЂ РІРµРєС‚РѕСЂР° РґРѕ sz
+    table[from][c] = to; // РґРІР° РїРµСЂРµРіСЂСѓР¶РµРЅРЅС‹С… РѕРїРµСЂР°С‚РѕСЂР° []: РѕРґРёРЅ РґР»СЏ vector, РґСЂСѓРіРѕР№ РґР»СЏ map.
 }
 
-inline void tFSM::final(tState st){finals.insert(st);}
+inline void tFSM::final(tState st) { finals.insert(st); }
 
-inline int tFSM::apply(const tSymbol* input){
-  if(table.empty()) return 0;// пустая таблица
-//                              состояний
-  tState state=0; //начальное состояние
-  int accepted=0;
+inline int tFSM::apply(const tSymbol *input) {
+    if (table.empty()) return 0;// РїСѓСЃС‚Р°СЏ С‚Р°Р±Р»РёС†Р° СЃРѕСЃС‚РѕСЏРЅРёР№
+    tState state = 0; //РЅР°С‡Р°Р»СЊРЅРѕРµ СЃРѕСЃС‚РѕСЏРЅРёРµ
+    int accepted = 0;
 
-// цикл прохода по входной цепочке
-  while (*input){
-    tTransMap::iterator iter;// итератор
-//                              контейнера map
-    tTransMap &trans=table[state];// ссылка на таблицу 
-//                         переходов из состояния state
+    // С†РёРєР» РїСЂРѕС…РѕРґР° РїРѕ РІС…РѕРґРЅРѕР№ С†РµРїРѕС‡РєРµ
+    while (*input) {
+        tTransMap::iterator iter;// РёС‚РµСЂР°С‚РѕСЂ РєРѕРЅС‚РµР№РЅРµСЂР° map
+        tTransMap &trans = table[state];// СЃСЃС‹Р»РєР° РЅР° С‚Р°Р±Р»РёС†Сѓ РїРµСЂРµС…РѕРґРѕРІ РёР· СЃРѕСЃС‚РѕСЏРЅРёСЏ state
 
-    if ((iter=trans.find(*input))==
-                     trans.end()) break;// нет перехода
+        if ((iter = trans.find(*input)) ==
+            trans.end())
+            break; // РЅРµС‚ РїРµСЂРµС…РѕРґР°
 
-    state = iter->second; //новое состояние
-    ++accepted;
-    ++input;
-  }//конец цикла
-//          состояние не заключительное?
-  return(finals.count(state)==0)? 0 : accepted;
+        state = iter->second; // РЅРѕРІРѕРµ СЃРѕСЃС‚РѕСЏРЅРёРµ
+        ++accepted;
+        ++input;
+    } // РєРѕРЅРµС† С†РёРєР»Р°
+    // СЃРѕСЃС‚РѕСЏРЅРёРµ РЅРµ Р·Р°РєР»СЋС‡РёС‚РµР»СЊРЅРѕРµ?
+    return (finals.count(state) == 0) ? 0 : accepted;
 }
 
-  inline void addstr(tFSM& fsm,
-              tFSM::tState from, const tFSM::tSymbol *str,
-              tFSM::tState to){
-   for(; *str; ++str) fsm.add(from, *str, to);
-  }
+inline void addstr(tFSM &fsm,
+                   tFSM::tState from, const tFSM::tSymbol *str,
+                   tFSM::tState to) {
+    for (; *str; ++str) fsm.add(from, *str, to);
+}
 
-  inline void addrange(tFSM& fsm,
-                tFSM::tState from, tFSM::tSymbol first,
-                tFSM::tSymbol last, tFSM::tState to){
-   for(tFSM::tSymbol i=first; i<=last; ++i) fsm.add(from, i, to);
-  }
+inline void addrange(tFSM &fsm,
+                     tFSM::tState from, tFSM::tSymbol first,
+                     tFSM::tSymbol last, tFSM::tState to) {
+    for (tFSM::tSymbol i = first; i <= last; ++i) fsm.add(from, i, to);
+}
 
 #endif

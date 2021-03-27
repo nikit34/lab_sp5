@@ -1,123 +1,120 @@
-//                 baselexer.cpp 2021
+// baselexer.cpp 2021
 #include "baselexer.h"
+
 using namespace std;
 
-tBaseLexer::tBaseLexer():start(buf),end(buf),
-                       line(0){
- *buf = 0;
-//  целое Aint
-    addstr  (Aint,0,"+-", 2);
-    addrange(Aint,2,'0','9',1);
-    addrange(Aint,0,'0','9',1);
-    addrange(Aint,1,'0','9',1);
-  Aint.final(1);
+tBaseLexer::tBaseLexer() : start(buf), end(buf), line(0) {
+    *buf = 0;
 
-// строка
-    const char SP=' ';// пробел
-    addstr  (Astr,0,"\"",   1);
-    addstr  (Astr,1,"\"",   2);
-    addrange(Astr,1,SP,'!',1);
-    addrange(Astr,1,'#','[',1);
-    addrange(Astr,1,']','~',1);
-    addrange(Astr,1,'\x80','\xff',1);// русские буквы
-    addstr  (Astr,1,"\\",   3);
-//  escape-последовательности:
-// \'  \"  \?  \\  \a  \b  \f  \n  \r  \t  \v
-    addstr  (Astr,3,"\"\\?'abfnrtv",   1);
-  Astr.final(2);
-//________________________________________
+    // С†РµР»РѕРµ Aint
+    addstr(Aint, 0, "+-", 2);
+    addrange(Aint, 2, '0', '9', 1);
+    addrange(Aint, 0, '0', '9', 1);
+    addrange(Aint, 1, '0', '9', 1);
+    Aint.final(1);
 
-// оператор
-    addstr  (Aoper,0,"+-*/=",   1);
-    addstr  (Aoper,0,"<>",   2);
-    addstr  (Aoper,2,"=",   1);
-  Aoper.final(1);
-  Aoper.final(2);
-//________________________________________
+    // СЃС‚СЂРѕРєР°
+    const char SP = ' '; // РїСЂРѕР±РµР»
+    addstr(Astr, 0, "\"", 1);
+    addstr(Astr, 1, "\"", 2);
+    addrange(Astr, 1, SP, '!', 1);
+    addrange(Astr, 1, '#', '[', 1);
+    addrange(Astr, 1, ']', '~', 1);
+    addrange(Astr, 1, '\x80', '\xff', 1); // СЂСѓСЃСЃРєРёРµ Р±СѓРєРІС‹
+    addstr(Astr, 1, "\\", 3);
+    // escape-РїРѕСЃР»РµРґРѕРІР°С‚РµР»СЊРЅРѕСЃС‚Рё:
+    // \'  \"  \?  \\  \a  \b  \f  \n  \r  \t  \v
+    addstr(Astr, 3, "\"\\?'abfnrtv", 1);
+    Astr.final(2);
 
-// булевские константы
-    addstr  (Abool,0,"#",   1);
-    addstr  (Abool,1,"tf",  2);
-  Abool.final(2);
-//________________________________________
+    // РѕРїРµСЂР°С‚РѕСЂ
+    addstr(Aoper, 0, "+-*/=", 1);
+    addstr(Aoper, 0, "<>", 2);
+    addstr(Aoper, 2, "=", 1);
+    Aoper.final(1);
+    Aoper.final(2);
+
+    // Р±СѓР»РµРІСЃРєРёРµ РєРѕРЅСЃС‚Р°РЅС‚С‹
+    addstr(Abool, 0, "#", 1);
+    addstr(Abool, 1, "tf", 2);
+    Abool.final(2);
 }
 
-bool tBaseLexer::Begin(const char* filename){
-   line = 0;
-   start = buf;
-   end = buf;
-   *buf = 0;
-   lexeme = "";
-   fsource.clear();
-   fsource.open(filename);
-   return bool(fsource);//false - ошибка открытия
-//                  файла
-  }
+bool tBaseLexer::Begin(const char *filename) {
+    line = 0;
+    start = buf;
+    end = buf;
+    *buf = 0;
+    lexeme = "";
+    fsource.clear();
+    fsource.open(filename);
+    return bool(fsource); // false - РѕС€РёР±РєР° РѕС‚РєСЂС‹С‚РёСЏ С„Р°Р№Р»Р°
+}
 
-string tBaseLexer::GetToken(){
-  lexeme = "";
-// пропустить пробельные символы и комментарии
-  for (;;){
-   if(*end==0 || *end==';'){
-     fsource.getline(buf,bufsize);
-     end = buf;
-     ++line;
-     if(!fsource) {
-                  *end=0;
-                   start=end;
-                   return "#";//конец файла
-                  }
-// skip Racket metadata
-  if(*buf=='#'&&!(*(buf+1)=='t'||*(buf+1)=='f'))*buf=0;
-     continue;
-   }
-   if(!std::isspace(*end)) break;// не-
-//                    пробельный символ
-   ++end;
-  }//for...
+string tBaseLexer::GetToken() {
+    lexeme = "";
+    // РїСЂРѕРїСѓСЃС‚РёС‚СЊ РїСЂРѕР±РµР»СЊРЅС‹Рµ СЃРёРјРІРѕР»С‹ Рё РєРѕРјРјРµРЅС‚Р°СЂРёРё
+    for (;;) {
+        if (*end == 0 || *end == ';') {
+            fsource.getline(buf, bufsize);
+            end = buf;
+            ++line;
+            if (!fsource) {
+                *end = 0;
+                start = end;
+                return "#"; // РєРѕРЅРµС† С„Р°Р№Р»Р°
+            }
+            // skip Racket metadata
+            if (*buf == '#' && !(*(buf + 1) == 't' || *(buf + 1) == 'f'))*buf = 0;
+            continue;
+        }
+        if (!std::isspace(*end)) break; // РЅРµРїСЂРѕР±РµР»СЊРЅС‹Р№ СЃРёРјРІРѕР»
+        ++end;
+    } // for...
 
-   start = end;// начало лексемы
-// скобки
-   if(*start == '('|| *start == ')'){
-     lexeme = string(1,*start);//строка из
-//                   одного символа
-     ++end;// продвинуть за скобку
-     return lexeme;
-   }
-// строка
-  if(*start == '"'){
-   int lstr=Astr.apply(start);
-   if(lstr != 0){
-    end += lstr;
-   lexeme = string(start,end);
-   return "$str";
-   }
-// ошибка в записи строки, lstr==0
-   lexeme = string(start);
-   end += lexeme.length();
-   return "?";
-  }
-// атом
-//         end продвигается за конец атома
-   while(*(++end)!=0){
-    if(std::isspace(*end)||
-       *end == ';'||
-       *end == '"'||
-       *end == '('||
-       *end == ')' ) break;
-    }//while...
-   lexeme = string(start,end);//строка из
-//            последовательности символов
+    start = end; // РЅР°С‡Р°Р»Рѕ Р»РµРєСЃРµРјС‹
+    // СЃРєРѕР±РєРё
+    if (*start == '(' || *start == ')') {
+        lexeme = string(1, *start); // СЃС‚СЂРѕРєР° РёР· РѕРґРЅРѕРіРѕ СЃРёРјРІРѕР»Р°
+        ++end; // РїСЂРѕРґРІРёРЅСѓС‚СЊ Р·Р° СЃРєРѕР±РєСѓ
+        return lexeme;
+    }
 
-// автоматы распознают токен внутри атома
-   int total        =lexeme.length();
-   const char* input=lexeme.c_str();
-   if(Aid.apply(input)==total) return "$id";
-   if(Adec.apply(input)==total) return "$dec";
-   if(Aint.apply(input)==total) return "$int";
-   if(Abool.apply(input)==total) return "$bool";
-   if(Aidq.apply(input)==total) return "$idq";
-   if(Aoper.apply(input)==total) return lexeme;
-   return "?";// неизвестный токен
- }
+    // СЃС‚СЂРѕРєР°
+    if (*start == '"') {
+        int lstr = Astr.apply(start);
+        if (lstr != 0) {
+            end += lstr;
+            lexeme = string(start, end);
+            return "$str";
+        }
+        // РѕС€РёР±РєР° РІ Р·Р°РїРёСЃРё СЃС‚СЂРѕРєРё, lstr==0
+        lexeme = string(start);
+        end += lexeme.length();
+        return "?";
+    }
+
+    // Р°С‚РѕРј
+    // end РїСЂРѕРґРІРёРіР°РµС‚СЃСЏ Р·Р° РєРѕРЅРµС† Р°С‚РѕРјР°
+    while (*(++end) != 0) {
+        if (std::isspace(*end) ||
+            *end == ';' ||
+            *end == '"' ||
+            *end == '(' ||
+            *end == ')')
+            break;
+    } // while...
+    lexeme = string(start, end); // СЃС‚СЂРѕРєР° РёР· РїРѕСЃР»РµРґРѕРІР°С‚РµР»СЊРЅРѕСЃС‚Рё СЃРёРјРІРѕР»РѕРІ
+
+    // Р°РІС‚РѕРјР°С‚С‹ СЂР°СЃРїРѕР·РЅР°СЋС‚ С‚РѕРєРµРЅ РІРЅСѓС‚СЂРё Р°С‚РѕРјР°
+    int total = lexeme.length();
+    const char *input = lexeme.c_str();
+    if (Aid.apply(input) == total) return "$id";
+    if (Adec.apply(input) == total) return "$dec";
+    if (Aint.apply(input) == total) return "$int";
+    if (Abool.apply(input) == total) return "$bool";
+    if (Aidq.apply(input) == total) return "$idq";
+    if (Aoper.apply(input) == total) return lexeme;
+    return "?"; // РЅРµРёР·РІРµСЃС‚РЅС‹Р№ С‚РѕРєРµРЅ
+}
 
