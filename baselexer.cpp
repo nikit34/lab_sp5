@@ -87,7 +87,7 @@ string tBaseLexer::GetToken() {
             end += lstr;
             lexeme = string(start, end);
             return "$str";
-        }
+        } 
         // ошибка в записи строки, lstr==0
         lexeme = string(start);
         end += lexeme.length();
@@ -117,4 +117,3 @@ string tBaseLexer::GetToken() {
     if (Aoper.apply(input) == total) return lexeme;
     return "?"; // неизвестный токен
 }
-
