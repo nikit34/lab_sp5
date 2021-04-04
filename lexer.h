@@ -34,7 +34,7 @@ public:
   addrange(Aid, 0, 'a', 'z', 1);
   addrange(Aid, 0, 'A', 'Z', 1);
   addstr(Aid, 0, "!", 2);
-  addstr(Aid, 0, "?", 1);
+  addstr(Aid, 0, "?", 3);
 
   addrange(Aid, 1, '0', '9', 1);
   addrange(Aid, 1, 'a', 'z', 1);
@@ -117,7 +117,7 @@ public:
 
   addrange(Aidq, 0, 'a', 'z', 1);
   addrange(Aidq, 0, 'A', 'Z', 1);
-  addstr(Aidq, 0, "!", 1);
+  addstr(Aidq, 0, "!", 2);
   addstr(Aidq, 0, "-", 1);
   addstr(Aidq, 0, "?", 2);
 
